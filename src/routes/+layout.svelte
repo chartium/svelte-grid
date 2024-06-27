@@ -1,30 +1,42 @@
 <script lang="ts">
+  import Nav from "./(components)/Nav.svelte";
+  import Ribbon from "./(components)/Ribbon.svelte";
+  import Footer from "./(components)/Footer.svelte";
   import { page } from "$app/stores";
-
-  import { KitDocs, createSidebarContext, type MarkdownMeta, type ResolvedSidebarConfig } from "@svelteness/kit-docs";
-
-  export let meta: MarkdownMeta | null = null;
-
-  export let sidebar: ResolvedSidebarConfig | null = null;
-
-  const { activeCategory } = createSidebarContext(sidebar);
-
-  $: category = $activeCategory ? `${$activeCategory}: ` : "";
-  $: title = meta ? `${category}${meta.title} | KitDocs` : null;
-  $: description = meta?.description;
 </script>
 
-<svelte:head>
-  {#key $page.url.pathname}
-    {#if title}
-      <title>{title}</title>
-    {/if}
-    {#if description}
-      <meta name="description" content={description} />
-    {/if}
-  {/key}
-</svelte:head>
+<Ribbon />
 
-<KitDocs {meta}>
-  <slot />
-</KitDocs>
+<Nav segment={$page.url.pathname} />
+
+<div class="content">
+  <div class="container">
+    <slot />
+  </div>
+</div>
+
+<Footer />
+
+<style>
+  :global(#sapper) {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+  .content {
+    flex: 1;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .container {
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 700px) {
+    :global(.github-corner) {
+      display: none;
+    }
+  }
+</style>

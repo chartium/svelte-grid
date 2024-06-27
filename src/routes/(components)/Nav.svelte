@@ -1,13 +1,18 @@
 <script lang="ts">
   export let segment: string;
+
+  const items = [
+    { name: "Home", href: "/" },
+    { name: "Examples", href: "/examples" },
+    { name: "Usage", href: "/usage" },
+    { name: "Features", href: "/features" },
+  ];
 </script>
 
 <div class="nav">
-  <a href="/" class="nav-i">Home</a>
-  <a href="examples" class="nav-i" class:active={segment === "examples"}>Examples</a>
-  <a href="usage" class="nav-i" class:active={segment === "usage"}>Usage</a>
-  <a href="features" class="nav-i" class:active={segment === "features"}>Features</a>
-  <a href="https://github.com/vaheqelyan/svelte-grid" target="_blank" class="nav-i">GitHub</a>
+  {#each items as item}
+    <a href={item.href} class="nav-i" class:active={segment === item.href}>{item.name}</a>
+  {/each}
 </div>
 
 <style>
