@@ -1,5 +1,6 @@
 <script lang="ts">
   import Grid from "$lib/Grid.svelte";
+  import type { Breakpoint } from "$lib/types.js";
   import gridHelp from "$lib/utils/helper.js";
 
   const id = () => "_" + Math.random().toString(36).substring(2, 9);
@@ -27,7 +28,7 @@
     });
   }
 
-  let cols = [[1287, 16]];
+  let cols: Breakpoint[] = [[1287, 16]];
 
   let items = gridHelp.adjust(generateLayout(16), 16);
 </script>
@@ -56,7 +57,7 @@
   </h4>
 </div>
 
-<Grid bind:items {cols} rowHeight={100} let:item fillSpace={true}>
+<Grid bind:items breakpoints={cols} rowHeight={100} let:item fillSpace={true}>
   <div
     class="content"
     style="background-image: linear-gradient({item.data.start}, {item.data

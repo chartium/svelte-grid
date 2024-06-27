@@ -5,21 +5,21 @@
     specifyUndefinedColumns,
     getFlattenedItem,
   } from "./utils/item.js";
-  import { onMount, createEventDispatcher } from "svelte";
+  import { createEventDispatcher } from "svelte";
   import {
     getCurrentBreakpoint,
     getRowsCount,
     throttle,
   } from "./utils/other.js";
-  import MoveResize, { type RepaintEvent } from "./MoveResize.svelte";
-  import type { Item } from "./types.js";
+  import MoveResize, { type RepaintEvent } from "./GridItem.svelte";
+  import type { Breakpoint, Item } from "./types.js";
 
   const dispatch = createEventDispatcher();
 
   export let fillSpace = false;
   export let items: Item<T>[];
   export let rowHeight: number;
-  export let cols;
+  export let breakpoints: Breakpoint[];
   export let gap: [number, number] = [10, 10];
   export let fastStart = false;
   export let throttleUpdate = 100;
@@ -30,55 +30,33 @@
 
   let totalCols: number;
 
-  let container: HTMLElement;
-
   let colWidth = 0;
-  let containerWidth: number;
+
+  let realContainerSize: DOMRect;
+
+  /** The total number of columns in the current breakpoint */
+  $: totalCols = getCurrentBreakpoint(
+    realContainerSize?.width ?? 0,
+    breakpoints,
+  );
+
+  /** The pixel width of a column */
+  $: colWidth = (realContainerSize?.width ?? 0) / totalCols;
 
   /** The total width of the container (the number of rows * the row height) */
   $: containerHeight = getRowsCount(items, totalCols) * rowHeight;
 
   const onResize = throttle(() => {
-    items = specifyUndefinedColumns(items, totalCols, cols);
+    items = specifyUndefinedColumns(items, totalCols, breakpoints);
     dispatch("resize", {
       cols: totalCols,
       xPerPx: colWidth,
       yPerPx: rowHeight,
-      width: containerWidth,
+      width: realContainerSize?.width,
     });
   }, throttleUpdate);
 
-  onMount(() => {
-    const sizeObserver = new ResizeObserver((entries) => {
-      requestAnimationFrame(() => {
-        let width = entries[0].contentRect.width;
-
-        if (width === containerWidth) return;
-
-        totalCols = getCurrentBreakpoint(width, cols);
-
-        colWidth = width / totalCols;
-
-        if (!containerWidth) {
-          items = specifyUndefinedColumns(items, totalCols, cols);
-
-          dispatch("mount", {
-            cols: totalCols,
-            colWidth,
-            rowHeight,
-          });
-        } else {
-          onResize();
-        }
-
-        containerWidth = width;
-      });
-    });
-
-    sizeObserver.observe(container);
-
-    return () => sizeObserver.disconnect();
-  });
+  $: realContainerSize?.width, onResize();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const updateMatrix = ({ detail }: CustomEvent<any>) => {
@@ -128,13 +106,15 @@
     });
   };
 
-  $: flattenedItems = items.map((value) => getFlattenedItem(value, totalCols));
+  $: flattenedItems = items
+    .filter((item) => item[totalCols])
+    .map((item) => getFlattenedItem(item, totalCols));
 </script>
 
 <div
   class="svlt-grid-container"
   style="height: {containerHeight}px"
-  bind:this={container}
+  bind:contentRect={realContainerSize}
 >
   {#if colWidth || !fastStart}
     {#each flattenedItems as item, i (item.id)}
@@ -147,8 +127,8 @@
         {item}
         {gap}
         {sensor}
-        container={scroller}
-        nativeContainer={container}
+        {scroller}
+        gridClientRect={realContainerSize}
         let:resizePointerDown
         let:movePointerDown
       >

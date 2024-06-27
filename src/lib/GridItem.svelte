@@ -18,8 +18,6 @@
 
   export let sensor: number;
 
-  export let container: HTMLElement | undefined;
-
   export let colWidth: number;
   export let rowHeight: number;
 
@@ -28,7 +26,8 @@
 
   export let totalCols;
 
-  export let nativeContainer: HTMLElement;
+  export let scroller: HTMLElement | undefined;
+  export let gridClientRect: DOMRect;
 
   $: width = Math.min(totalCols - item.x, item.w) * colWidth - gap[0] * 2;
   $: height = item.h * rowHeight - gap[1] * 2;
@@ -89,7 +88,7 @@
 
   const getContainerFrame = (element?: HTMLElement) => {
     if (element === document.documentElement || !element) {
-      const { top, bottom } = nativeContainer.getBoundingClientRect();
+      const { top, bottom } = gridClientRect;
 
       return {
         top: Math.max(0, top),
@@ -112,8 +111,8 @@
     shadow = { x: item.x, y: item.y, w: item.w, h: item.h };
     newSize = { width, height };
 
-    containerFrame = getContainerFrame(container);
-    scrollElement = getScroller(container);
+    containerFrame = getContainerFrame(scroller);
+    scrollElement = getScroller(scroller);
 
     cordDiff = { x: 0, y: 0 };
     rect = itemElement.getBoundingClientRect();
@@ -225,8 +224,8 @@
     trans = false;
     shadow = { x: item.x, y: item.y, w: item.w, h: item.h };
 
-    containerFrame = getContainerFrame(container);
-    scrollElement = getScroller(container);
+    containerFrame = getContainerFrame(scroller);
+    scrollElement = getScroller(scroller);
 
     window.addEventListener("pointermove", resizePointerMove);
     window.addEventListener("pointerup", resizePointerUp);
