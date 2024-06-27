@@ -13,7 +13,14 @@
     return new Array(10).fill(null).map(function (item, i) {
       const y = Math.ceil(Math.random() * 4) + 1;
       return {
-        16: gridHelp.item({ x: (i * 2) % col, y: Math.floor(i / 6) * y, w: 2, h: y }),
+        16: gridHelp.item({
+          x: (i * 2) % col,
+          y: Math.floor(i / 6) * y,
+          w: 2,
+          h: y,
+          draggable: true,
+          resizable: true,
+        }),
         id: id(),
         data: { start: randomHexColorCode(), end: randomHexColorCode() },
       };
@@ -26,19 +33,35 @@
 </script>
 
 <svelte:head>
-  <title>Svelte-grid — A draggable and resizable grid layout with responsive breakpoints, for Svelte.</title>
-  <meta name="description" content="A draggable and resizable grid layout with responsive breakpoints, for Svelte." />
-  <meta name="keywords" content="draggable,resizable,grid,layout,responsive,breakpoints,Svelte,svelte,svelte.js,sveltejs" />
+  <title
+    >Svelte-grid — A draggable and resizable grid layout with responsive
+    breakpoints, for Svelte.</title
+  >
+  <meta
+    name="description"
+    content="A draggable and resizable grid layout with responsive breakpoints, for Svelte."
+  />
+  <meta
+    name="keywords"
+    content="draggable,resizable,grid,layout,responsive,breakpoints,Svelte,svelte,svelte.js,sveltejs"
+  />
   <meta name="author" content="Vahe Araqelyan" />
 </svelte:head>
 
 <div class="welcome">
   <h1>Svelte-grid</h1>
-  <h4>A draggable and resizable grid layout with responsive breakpoints, for Svelte.</h4>
+  <h4>
+    A draggable and resizable grid layout with responsive breakpoints, for
+    Svelte.
+  </h4>
 </div>
 
-<Grid bind:items {cols} rowHeight={100} let:dataItem fillSpace={true}>
-  <div class="content" style="background-image: linear-gradient({dataItem.data.start}, {dataItem.data.end});" />
+<Grid bind:items {cols} rowHeight={100} let:item fillSpace={true}>
+  <div
+    class="content"
+    style="background-image: linear-gradient({item.data.start}, {item.data
+      .end});"
+  />
 </Grid>
 
 <style>

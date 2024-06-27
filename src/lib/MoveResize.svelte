@@ -1,47 +1,49 @@
+<script lang="ts" context="module">
+  export type RepaintEvent = {
+    id: string;
+    shadow: Area;
+    isPointerUp?: boolean;
+    onUpdate?: () => void;
+  };
+</script>
+
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
+  import type { Area, FlattenedItem, Position } from "./types.js";
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{
+    repaint: RepaintEvent;
+    pointerup: { id: string };
+  }>();
 
   export let sensor: number;
-  export let width: number;
-  export let height: number;
-  export let left: number;
-  export let top: number;
 
-  export let resizable: boolean;
-  export let draggable: boolean;
+  export let container: HTMLElement | undefined;
 
-  export let id: string;
-  export let container: HTMLElement;
+  export let colWidth: number;
+  export let rowHeight: number;
 
-  export let xPerPx: number;
-  export let yPerPx: number;
+  export let gap: [number, number];
+  export let item: FlattenedItem;
 
-  export let gapX: number;
-  export let gapY: number;
-  export let item: any | undefined = undefined;
-
-  export let max: { w: number; h: number; x: number; y: number };
-  export let min: { w: number; h: number; x: number; y: number };
-
-  export let cols;
+  export let totalCols;
 
   export let nativeContainer: HTMLElement;
 
+  $: width = Math.min(totalCols - item.x, item.w) * colWidth - gap[0] * 2;
+  $: height = item.h * rowHeight - gap[1] * 2;
+  $: top = item.y * rowHeight + gap[1];
+  $: left = item.x * colWidth + gap[0];
+
+  let itemElement: HTMLElement;
   let shadowElement: HTMLElement;
-  let shadow = { x: 0, y: 0, w: 0, h: 0 };
+  let shadow: Area = { x: 0, y: 0, w: 0, h: 0 };
 
   let active = false;
 
-  let initX: number, initY: number;
+  let capturePos: Position = { x: 0, y: 0 };
 
-  let capturePos = {
-    x: 0,
-    y: 0,
-  };
-
-  let cordDiff = { x: 0, y: 0 };
+  let cordDiff: Position = { x: 0, y: 0 };
 
   let newSize = { width, height };
   let trans = false;
@@ -53,8 +55,8 @@
     const xdragBound = rect.left + cordDiff.x;
     const ydragBound = rect.top + cordDiff.y;
 
-    cordDiff.x = shadow.x * xPerPx + gapX - (shadowBound.x - xdragBound);
-    cordDiff.y = shadow.y * yPerPx + gapY - (shadowBound.y - ydragBound);
+    cordDiff.x = shadow.x * colWidth + gap[0] - (shadowBound.x - xdragBound);
+    cordDiff.y = shadow.y * rowHeight + gap[1] - (shadowBound.y - ydragBound);
 
     active = false;
     trans = true;
@@ -66,20 +68,20 @@
     }, 100);
 
     dispatch("pointerup", {
-      id,
+      id: item.id,
     });
   };
 
   let repaint = (cb?: () => void, isPointerUp?: boolean) => {
     dispatch("repaint", {
-      id,
+      id: item.id,
       shadow,
       isPointerUp,
       onUpdate: cb,
     });
   };
 
-  // Autoscroll
+  // Auto-scroll
   let _scrollTop = 0;
   let containerFrame: Pick<DOMRect, "top" | "bottom">;
   let rect: DOMRect;
@@ -98,9 +100,11 @@
     return element.getBoundingClientRect();
   };
 
-  const getScroller = (element?: HTMLElement) => element ?? document.documentElement;
+  const getScroller = (element?: HTMLElement) =>
+    element ?? document.documentElement;
 
-  const pointerdown = ({ clientX, clientY, target }: PointerEvent) => {
+  let initX: number, initY: number;
+  const pointerdown = ({ clientX, clientY }: PointerEvent) => {
     initX = clientX;
     initY = clientY;
 
@@ -112,7 +116,7 @@
     scrollElement = getScroller(container);
 
     cordDiff = { x: 0, y: 0 };
-    rect = (target as HTMLElement).closest(".svlt-grid-item")!.getBoundingClientRect();
+    rect = itemElement.getBoundingClientRect();
 
     active = true;
     trans = false;
@@ -139,14 +143,14 @@
     const boundX = capturePos.x + cordDiff.x;
     const boundY = capturePos.y + (cordDiff.y + _newScrollTop);
 
-    let gridX = Math.round(boundX / xPerPx);
-    let gridY = Math.round(boundY / yPerPx);
+    let gridX = Math.round(boundX / colWidth);
+    let gridY = Math.round(boundY / rowHeight);
 
-    shadow.x = Math.max(Math.min(gridX, cols - shadow.w), 0);
+    shadow.x = Math.max(Math.min(gridX, totalCols - shadow.w), 0);
     shadow.y = Math.max(gridY, 0);
 
-    if (max.y) {
-      shadow.y = Math.min(shadow.y, max.y);
+    if (item.max?.y) {
+      shadow.y = Math.min(shadow.y, item.max.y);
     }
 
     repaint();
@@ -160,10 +164,14 @@
     const { clientX, clientY } = event;
     cordDiff = { x: clientX - initX, y: clientY - initY };
 
-    const Y_SENSOR = sensor;
-
-    let velocityTop = Math.max(0, (containerFrame.top + Y_SENSOR - clientY) / Y_SENSOR);
-    let velocityBottom = Math.max(0, (clientY - (containerFrame.bottom - Y_SENSOR)) / Y_SENSOR);
+    let velocityTop = Math.max(
+      0,
+      (containerFrame.top + sensor - clientY) / sensor,
+    );
+    let velocityBottom = Math.max(
+      0,
+      (clientY - (containerFrame.bottom - sensor)) / sensor,
+    );
 
     const topSensor = velocityTop > 0 && velocityBottom === 0;
     const bottomSensor = velocityBottom > 0 && velocityTop === 0;
@@ -203,13 +211,14 @@
 
   const resizePointerDown = (e: PointerEvent) => {
     e.stopPropagation();
+
     const { pageX, pageY } = e;
 
     resizeInitPos = { x: pageX, y: pageY };
     initSize = { width, height };
 
     cordDiff = { x: 0, y: 0 };
-    rect = (e.target as HTMLElement).closest(".svlt-grid-item")!.getBoundingClientRect();
+    rect = itemElement.getBoundingClientRect();
     newSize = { width, height };
 
     active = true;
@@ -228,20 +237,29 @@
     newSize.height = initSize.height + pageY - resizeInitPos.y;
 
     // Get max col number
-    let maxWidth = cols - shadow.x;
-    maxWidth = Math.min(max.w, maxWidth) || maxWidth;
+    let maxWidth = totalCols - shadow.x;
+    maxWidth = item.max?.w ? Math.min(item.max.w, maxWidth) : maxWidth;
 
     // Limit bound
-    newSize.width = Math.max(Math.min(newSize.width, maxWidth * xPerPx - gapX * 2), min.w * xPerPx - gapX * 2);
+    newSize.width = Math.max(
+      Math.min(newSize.width, maxWidth * colWidth - gap[0] * 2),
+      item.min.w * colWidth - gap[0] * 2,
+    );
 
-    newSize.height = Math.max(newSize.height, min.h * yPerPx - gapY * 2);
+    newSize.height = Math.max(
+      newSize.height,
+      item.min.h * rowHeight - gap[1] * 2,
+    );
 
-    if (max.h) {
-      newSize.height = Math.min(newSize.height, max.h * yPerPx - gapY * 2);
+    if (item.max?.h) {
+      newSize.height = Math.min(
+        newSize.height,
+        item.max.h * rowHeight - gap[1] * 2,
+      );
     }
     // Limit col & row
-    shadow.w = Math.round((newSize.width + gapX * 2) / xPerPx);
-    shadow.h = Math.round((newSize.height + gapY * 2) / yPerPx);
+    shadow.w = Math.round((newSize.width + gap[0] * 2) / colWidth);
+    shadow.h = Math.round((newSize.height + gap[1] * 2) / rowHeight);
 
     repaint();
   };
@@ -256,27 +274,37 @@
   };
 </script>
 
+{#if active || trans}
+  <div
+    class="svlt-grid-shadow shadow-active"
+    style:width="{shadow.w * colWidth - gap[0] * 2}px"
+    style:height="{shadow.h * rowHeight - gap[1] * 2}px"
+    style="transform: translate({shadow.x * colWidth + gap[0]}px, {shadow.y *
+      rowHeight +
+      gap[1]}px); "
+    bind:this={shadowElement}
+  />
+{/if}
+
 <div
   draggable={false}
-  on:pointerdown={item?.customDragger || draggable ? null : pointerdown}
+  on:pointerdown={item.customDragger || item.draggable ? null : pointerdown}
   class="svlt-grid-item"
   class:svlt-grid-active={active || (trans && rect)}
-  style="width: {active ? newSize.width : width}px; height:{active ? newSize.height : height}px;
-  {active
+  style:width="{active ? newSize.width : width}px"
+  style:height="{active ? newSize.height : height}px"
+  style="{active
     ? `transform: translate(${cordDiff.x}px, ${cordDiff.y}px);top:${rect.top}px;left:${rect.left}px;`
     : trans
       ? `transform: translate(${cordDiff.x}px, ${cordDiff.y}px); position:absolute; transition: width 0.2s, height 0.2s;`
       : `transition: transform 0.2s, opacity 0.2s; transform: translate(${left}px, ${top}px); `} "
+  bind:this={itemElement}
 >
   <slot movePointerDown={pointerdown} {resizePointerDown} />
-  {#if resizable && !item.customResizer}
+  {#if item.resizable && !item.customResizer}
     <div class="svlt-grid-resizer" on:pointerdown={resizePointerDown} />
   {/if}
 </div>
-
-{#if active || trans}
-  <div class="svlt-grid-shadow shadow-active" style="width: {shadow.w * xPerPx - gapX * 2}px; height: {shadow.h * yPerPx - gapY * 2}px; transform: translate({shadow.x * xPerPx + gapX}px, {shadow.y * yPerPx + gapY}px); " bind:this={shadowElement} />
-{/if}
 
 <style>
   .svlt-grid-item {
@@ -296,6 +324,7 @@
     bottom: 0;
     cursor: se-resize;
   }
+
   .svlt-grid-resizer::after {
     content: "";
     position: absolute;

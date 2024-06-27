@@ -1,44 +1,82 @@
-import { makeMatrixFromItems } from "../utils/matrix.js";
-import { findFreeSpaceForItem, normalize, adjust } from "../utils/item.js";
+import { makeMatrix, makeMatrixFromItems } from "../utils/matrix.js";
+import {
+  findFreeSpaceForItem,
+  getFlattenedItem,
+  moveItem,
+} from "../utils/item.js";
 import { getRowsCount } from "./other.js";
-
-function makeItem(item) {
-  const { min = { w: 1, h: 1 }, max } = item;
-
-  return {
-    fixed: false,
-    resizable: !item.fixed,
-    draggable: !item.fixed,
-    customDragger: false,
-    customResizer: false,
-    min: {
-      w: Math.max(1, min.w),
-      h: Math.max(1, min.h),
-    },
-    max: { ...max },
-    ...item,
-  };
-}
+import type {
+  FlattenedItem,
+  Item,
+  ItemLayout,
+  ItemLayoutScaffold,
+} from "../types.ts";
 
 const gridHelp = {
-  normalize(items, col) {
-    const rows = getRowsCount(items, col);
-    return normalize(items, col, rows);
+  normalize<T>(items: Item<T>[], col: number) {
+    let result = [...items];
+
+    result.forEach((value) => {
+      const item = getFlattenedItem(value, col);
+
+      if (!item.fixed) result = moveItem(item, result, col);
+    });
+
+    return result;
   },
 
-  adjust(items, col) {
-    return adjust(items, col);
+  adjust<T>(items: Item<T>[], col: number) {
+    let matrix = makeMatrix<FlattenedItem>(getRowsCount(items, col), col);
+
+    const order = items.toSorted((a, b) => {
+      const aItem = a[col];
+      const bItem = b[col];
+
+      return aItem.x - bItem.x || aItem.y - bItem.y;
+    });
+
+    return order.reduce((acc, item) => {
+      const position = findFreeSpaceForItem(matrix, item[col]);
+
+      acc.push({
+        ...item,
+        [col]: {
+          ...item[col],
+          ...position,
+        },
+      });
+
+      matrix = makeMatrixFromItems(acc, getRowsCount(acc, col), col);
+
+      return acc;
+    }, [] as Item<T>[]);
   },
 
-  item(obj) {
-    return makeItem(obj);
+  item(item: ItemLayoutScaffold): ItemLayout {
+    const { min, max } = item;
+
+    return {
+      fixed: false,
+      resizable: !item.fixed,
+      draggable: !item.fixed,
+      customDragger: false,
+      customResizer: false,
+      min: min
+        ? {
+            ...min,
+            w: Math.max(1, min?.w ?? 1),
+            h: Math.max(1, min?.h ?? 1),
+          }
+        : { w: 1, h: 1 },
+      max: max ?? {},
+      ...item,
+    };
   },
 
-  findSpace(item, items, cols) {
-    let matrix = makeMatrixFromItems(items, getRowsCount(items, cols), cols);
+  findSpace(item: Item<unknown>, items: Item<unknown>[], cols: number) {
+    const matrix = makeMatrixFromItems(items, getRowsCount(items, cols), cols);
 
-    let position = findFreeSpaceForItem(matrix, item[cols]);
-    return position;
+    return findFreeSpaceForItem(matrix, item[cols]);
   },
 };
 

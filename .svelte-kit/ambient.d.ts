@@ -28,6 +28,7 @@
 declare module '$env/static/private' {
 	export const SHELL: string;
 	export const npm_command: string;
+	export const WINDOWID: string;
 	export const COLORTERM: string;
 	export const npm_package_devDependencies__iconify_json_ri: string;
 	export const HYPRLAND_CMD: string;
@@ -96,6 +97,7 @@ declare module '$env/static/private' {
 	export const STARSHIP_SESSION_KEY: string;
 	export const npm_package_scripts_format: string;
 	export const npm_package_scripts_preview: string;
+	export const ALACRITTY_SOCKET: string;
 	export const npm_lifecycle_script: string;
 	export const npm_package_description: string;
 	export const VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
@@ -156,6 +158,7 @@ declare module '$env/static/private' {
 	export const GDK_BACKEND: string;
 	export const PATH: string;
 	export const npm_config_node_gyp: string;
+	export const ALACRITTY_LOG: string;
 	export const npm_package_devDependencies__sveltejs_kit: string;
 	export const ORIGINAL_XDG_CURRENT_DESKTOP: string;
 	export const npm_package_devDependencies_globals: string;
@@ -165,6 +168,7 @@ declare module '$env/static/private' {
 	export const npm_config_registry: string;
 	export const npm_package_devDependencies__svelteness_kit_docs: string;
 	export const _JAVA_OPTIONS: string;
+	export const ALACRITTY_WINDOW_ID: string;
 	export const npm_node_execpath: string;
 	export const LC_NUMERIC: string;
 	export const TERM_PROGRAM: string;
@@ -202,6 +206,7 @@ declare module '$env/dynamic/private' {
 	export const env: {
 		SHELL: string;
 		npm_command: string;
+		WINDOWID: string;
 		COLORTERM: string;
 		npm_package_devDependencies__iconify_json_ri: string;
 		HYPRLAND_CMD: string;
@@ -270,6 +275,7 @@ declare module '$env/dynamic/private' {
 		STARSHIP_SESSION_KEY: string;
 		npm_package_scripts_format: string;
 		npm_package_scripts_preview: string;
+		ALACRITTY_SOCKET: string;
 		npm_lifecycle_script: string;
 		npm_package_description: string;
 		VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
@@ -330,6 +336,7 @@ declare module '$env/dynamic/private' {
 		GDK_BACKEND: string;
 		PATH: string;
 		npm_config_node_gyp: string;
+		ALACRITTY_LOG: string;
 		npm_package_devDependencies__sveltejs_kit: string;
 		ORIGINAL_XDG_CURRENT_DESKTOP: string;
 		npm_package_devDependencies_globals: string;
@@ -339,6 +346,7 @@ declare module '$env/dynamic/private' {
 		npm_config_registry: string;
 		npm_package_devDependencies__svelteness_kit_docs: string;
 		_JAVA_OPTIONS: string;
+		ALACRITTY_WINDOW_ID: string;
 		npm_node_execpath: string;
 		LC_NUMERIC: string;
 		TERM_PROGRAM: string;

@@ -86,10 +86,8 @@ const cols = [[breakpoint, column]]
 
 <h3>Helper functions</h3>
 
-<p>The helper function is located in `svelte-grid/build/helper/index.mjs`</p>
-
 {`
-import gridHelp from 'svelte-grid/build/helper'
+import { gridHelp } from 'svelte-grid'
 `}
 
 <h3>What's in there?</h3>

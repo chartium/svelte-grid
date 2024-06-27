@@ -1,20 +1,45 @@
-export const makeMatrix = <T>(rows: number, cols: number) => Array.from(Array(rows), () => new Array(cols)) as T[][]; // make 2d array
+import type { FlattenedItem, Item } from "../types.ts";
+import { getFlattenedItem } from "./item.js";
 
-export function makeMatrixFromItems(items: unknown[], rows: number, cols: number) {
-  const matrix = makeMatrix(rows, cols);
+/**
+ * Create an empty matrix of the given dimensions.
+ *
+ * @param rows The number of rows.
+ * @param cols The number of columns.
+ * @returns An empty rows * columns matrix.
+ */
+export const makeMatrix = <T>(rows: number, cols: number) =>
+  Array.from(Array(rows), () => new Array(cols)) as T[][]; // make 2d array
+
+/**
+ * Create a matrix of flattened items from the current configuration of the grid.
+ * Useful for lookup based on position.
+ *
+ * @param items All of the items in the grid.
+ * @param rows The total number of rows the grid currently has.
+ * @param cols The total number of columns the grid currently has.
+ * @param ignoreIdList An optional list of ids to ignore.
+ * @returns A matrix of items, an item at position `(x, y)` is at `matrix[y][x]`.
+ */
+export function makeMatrixFromItems(
+  items: Item[],
+  rows: number,
+  cols: number,
+  ignoreIdList?: string[],
+): FlattenedItem[][] {
+  const matrix = makeMatrix<FlattenedItem>(rows, cols);
 
   for (const item of items) {
-    const value = item[cols];
+    const flattened = getFlattenedItem(item, cols);
 
-    if (value) {
-      const { x, y, h } = value;
-      const { id } = item;
-      const w = Math.min(cols, value.w);
+    if (!flattened || ignoreIdList?.includes(flattened.id)) continue;
 
-      for (let j = y; j < y + h; j++) {
-        for (let k = x; k < x + w; k++) {
-          matrix[j][k] = { ...value, id };
-        }
+    const { x, y, h } = flattened;
+    const w = Math.min(cols, flattened.w);
+
+    for (let j = y; j < y + h; j++) {
+      for (let k = x; k < x + w; k++) {
+        matrix[j][k] = flattened;
       }
     }
   }
@@ -22,45 +47,26 @@ export function makeMatrixFromItems(items: unknown[], rows: number, cols: number
   return matrix;
 }
 
-export function findCloseBlocks(items, matrix, curObject) {
-  const { h, x, y } = curObject;
+/**
+ * Find all items that collide with the given item.
+ *
+ * @param matrix The current matrix of items.
+ * @param item The item to check for collisions.
+ * @returns A list of items that collide with the given item.
+ */
+export function findCollidingBlocks(
+  matrix: FlattenedItem[][],
+  item: FlattenedItem,
+): FlattenedItem[] {
+  const { x, y } = item;
 
-  const w = Math.min(matrix[0].length, curObject.w);
-  const tempR = matrix.slice(y, y + h);
+  const w = Math.min(matrix[0].length - x, item.w);
+  const h = Math.min(matrix.length - y, item.h);
 
-  let result = [];
-  for (var i = 0; i < tempR.length; i++) {
-    let tempA = tempR[i].slice(x, x + w);
-    result = [...result, ...tempA.map((val) => val.id && val.id !== curObject.id && val.id).filter(Boolean)];
-  }
+  const result = new Set<FlattenedItem>();
 
-  return [...new Set(result)];
-}
+  for (let j = y; j < y + h; j++)
+    for (let k = x; k < x + w; k++) result.add(matrix[j][k]);
 
-export function makeMatrixFromItemsIgnore(items, ignoreList, _row, _col) {
-  let matrix = makeMatrix(_row, _col);
-
-  for (const item of items) {
-    const value = item[_col];
-    const id = item.id;
-    const { x, y, h } = value;
-    const w = Math.min(_col, value.w);
-
-    if (ignoreList.indexOf(id) === -1) {
-      for (let j = y; j < y + h; j++) {
-        const row = matrix[j];
-
-        if (!row) continue;
-
-        for (let k = x; k < x + w; k++) {
-          row[k] = { ...value, id };
-        }
-      }
-    }
-  }
-  return matrix;
-}
-
-export function findItemsById(closeBlocks, items) {
-  return items.filter((item) => closeBlocks.indexOf(item.id) !== -1);
+  return [...result];
 }
