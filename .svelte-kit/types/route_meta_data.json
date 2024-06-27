@@ -1,0 +1,15 @@
+{
+	"/": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/features": [
+		"src/routes/+layout.ts"
+	],
+	"/kit-docs/[slug].meta": [
+		"src/routes/kit-docs/[slug].meta/+server.ts"
+	],
+	"/kit-docs/[dir].sidebar": [
+		"src/routes/kit-docs/[dir].sidebar/+server.ts"
+	]
+}
