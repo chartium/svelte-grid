@@ -63,6 +63,4 @@ typings/
 build/
 less.exe.stackdump
 
-# www
-www/__sapper__/
-www/src/components/svelte-grid/
+.svelte-kit/
