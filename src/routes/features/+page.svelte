@@ -1,13 +1,20 @@
+<script>
+  import Link from "../(components)/Link.svelte";
+</script>
+
 <svelte:head>
   <title>Svelte-grid — Features</title>
   <!-- <meta name="description" content=""/> -->
-  <meta name="keywords" content="draggable,resizable,grid,layout,responsive,breakpoints,Svelte,svelte,svelte.js,sveltejs,features" />
+  <meta
+    name="keywords"
+    content="draggable,resizable,grid,layout,responsive,breakpoints,Svelte,svelte,svelte.js,sveltejs,features"
+  />
   <meta name="author" content="Vahe Araqelyan" />
 </svelte:head>
 
-<h1>Features</h1>
+<h1 class="h1">Features</h1>
 
-<ul>
+<ul class="list-disc pl-8">
   <li>Compatible with SvelteKit</li>
   <li>Draggable widgets</li>
   <li>Resizable widgets</li>
@@ -19,7 +26,11 @@
   <li>Soft auto-scroll</li>
 </ul>
 
-<a href="https://github.com/chartium/svelte-grid/issues/new" target="_blank">Suggest your feature</a>
+<br />
+
+<Link href="https://github.com/chartium/svelte-grid/issues/new" external
+  >Suggest your feature</Link
+>
 
 <style>
   @media only screen and (max-width: 400px) {

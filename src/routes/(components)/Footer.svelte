@@ -1,8 +1,17 @@
-<div class="footer">Created by <a target="_blank" href="https://github.com/vaheqelyan">@vaheqelyan</a> for awesome svelte.js ❤️</div>
+<script lang="ts">
+  import Link from "./Link.svelte";
+</script>
 
-<style>
-  .footer {
-    padding: 10px 10px;
-    text-align: center;
-  }
-</style>
+<hr class="my-4 mt-auto" />
+<div class="py-4 text-center">
+  Created by <Link href="https://github.com/vaheqelyan" external
+    >@vaheqelyan</Link
+  >, improved by
+  <Link href="https://github.com/chartium" external>@chartium</Link>
+  for Svelte ❤️
+  <br />
+
+  <Link href="https://github.com/chartium/svelte-grid" external
+    >View source code on GitHub</Link
+  >
+</div>

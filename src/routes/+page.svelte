@@ -34,10 +34,10 @@
 </script>
 
 <svelte:head>
-  <title
-    >Svelte-grid — A draggable and resizable grid layout with responsive
-    breakpoints, for Svelte.</title
-  >
+  <title>
+    svelte-grid — A draggable and resizable grid layout with responsive
+    breakpoints, for Svelte.
+  </title>
   <meta
     name="description"
     content="A draggable and resizable grid layout with responsive breakpoints, for Svelte."
@@ -50,11 +50,11 @@
 </svelte:head>
 
 <div class="welcome">
-  <h1>Svelte-grid</h1>
-  <h4>
+  <h1 class="h1">svelte-grid</h1>
+  <p class="my-4">
     A draggable and resizable grid layout with responsive breakpoints, for
     Svelte.
-  </h4>
+  </p>
 </div>
 
 <Grid bind:items breakpoints={cols} rowHeight={100} let:item fillSpace={true}>

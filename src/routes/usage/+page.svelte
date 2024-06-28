@@ -1,128 +1,170 @@
+<script>
+  import { CodeBlock } from "@skeletonlabs/skeleton";
+  import Link from "../(components)/Link.svelte";
+</script>
+
 <svelte:head>
-  <title>Svelte-grid — Usage</title>
+  <title>svelte-grid — Usage</title>
   <!-- <meta name="description" content=""/> -->
-  <meta name="keywords" content="draggable,resizable,grid,layout,responsive,breakpoints,Svelte,svelte,svelte.js,sveltejs,usage" />
+  <meta
+    name="keywords"
+    content="draggable,resizable,grid,layout,responsive,breakpoints,Svelte,svelte,svelte.js,sveltejs,usage"
+  />
   <meta name="author" content="Vahe Araqelyan" />
 </svelte:head>
 
-<h3>Usage</h3>
+<h1 class="h1">Usage</h1>
 
-<p>Use `Grid` like any other component.</p>
+<p>
+  Use <code class="code">Grid</code> like any other component.
+</p>
 
-<p>The basic example</p>
+<p>A basic example:</p>
 
-{`
+<CodeBlock
+  language="html"
+  code={`
 <script>
-import { Grid, gridHelp } from "svelte-grid";
+  import { Grid, gridHelp } from "svelte-grid";
 
-const id = () => "_" + Math.random().toString(36).substring(2, 9);
+  const id = () => "_" + Math.random().toString(36).substring(2, 9);
 
-let items = [
-  {
-    6: gridHelp.item({
-      x: 0,
-      y: 0,
-      w: 2,
-      h: 2,
-    }),
-    id: id(),
-  },
+  let items = [
+    {
+      6: gridHelp.item({
+        x: 0,
+        y: 0,
+        w: 2,
+        h: 2,
+      }),
+      id: id(),
+    },
 
-  {
-    6: gridHelp.item({
-      x: 2,
-      y: 0,
-      w: 2,
-      h: 2,
-    }),
-    id: id(),
-  },
-]
+    {
+      6: gridHelp.item({
+        x: 2,
+        y: 0,
+        w: 2,
+        h: 2,
+      }),
+      id: id(),
+    },
+  ]
 
-const breakpoint = 1200
-const column = 6
+  const breakpoint = 1200
+  const column = 6
 
-const cols = [[breakpoint, column]]
+  const cols = [[breakpoint, column]]
 </script>
 
 <Grid {cols} bind:items={items} let:item={item}>
   <div>{item.id}</div>
 </Grid>
 `}
+/>
 
-<a href="/examples" target="_blank">See more examples</a>
+<h2 class="h2">How to style</h2>
 
-<h3>How to style</h3>
+<p>
+  You can apply styles to a selector globally, use the, <code class="code"
+    >:global(...)</code
+  >
+  modifier, for example
+</p>
 
-<p>Right now this is a problem for svelte</p>
+<CodeBlock
+  language="css"
+  code={`
+:global(.svlt-grid-shadow) {
+  /* Back shadow */
+  background: pink;
+}
 
-<p>But you can apply styles to a selector globally, use the, `:global(...)` modifier, for example</p>
+:global(.svlt-grid-container) {
+  /* Container color */
+  background: #eee;
+}
 
-{`
-<style>
-  :global(.svlt-grid-shadow) {
-    /* Back shadow */
-    background: pink;
-  }
-  :global(.svlt-grid-container) {
-    /* Container color */
-    background: #eee;
-  }
-  :global(.svlt-grid-resizer::after) {
-    /* Resizer color */
-    border-color: white !important;
-  }
-</style>
+:global(.svlt-grid-resizer::after) {
+  /* Resizer color */
+  border-color: white !important;
+}
 `}
+/>
 
-<p>Here are the class names</p>
+<p>Here are the class names:</p>
 
-<ul>
-  <li><emph>.svlt-grid-container</emph> Class name for container grid</li>
-  <li><emph>.svlt-grid-item</emph> Slot shell class name</li>
-  <li><emph>.svlt-grid-shadow</emph> Class name for the back shadow when resizing or moving an element</li>
-  <li><emph>.svlt-grid-resizer</emph> Class name for resizer</li>
+<ul class="list-disc pl-8">
+  <li>
+    <span>
+      <emph class="italic">.svlt-grid-container</emph> - class name of the container
+      grid
+    </span>
+  </li>
+  <li>
+    <span>
+      <emph class="italic">.svlt-grid-item</emph> - slot shell class name
+    </span>
+  </li>
+  <li>
+    <span>
+      <emph class="italic">.svlt-grid-shadow</emph> - class name for the back shadow
+      moving an element
+    </span>
+  </li>
+  <li>
+    <emph class="italic">.svlt-grid-resizer</emph> - class name for resizer
+  </li>
 </ul>
 
-<h3>Helper functions</h3>
+<h2 class="h2">Helper functions</h2>
 
-{`
-import { gridHelp } from 'svelte-grid'
-`}
+<CodeBlock
+  language="javascript"
+  code={`import { gridHelp } from 'svelte-grid'`}
+/>
 
-<h3>What's in there?</h3>
+<h3 class="h3">What's in there?</h3>
 
-<p>Well, there are several functions that will help you manage the grid elements</p>
+<p>
+  Well, there are several functions that will help you manage the grid elements
+</p>
 
-{`
-gridHelp.item(item: Object)
-`}
+<CodeBlock language="typescript" code={`gridHelp.item(item: Object)`} />
 
-<p>Returns an object with the properties necessary to create a widget. This is an object for a single widget</p>
+<p>
+  Returns an object with the properties necessary to create a widget. This is an
+  object for a single widget
+</p>
 
-{`
-  x: Number,
-  y: Number,
-  w: Number,
-  h: Number,
-  fixed: Boolean,
-  resizable: Boolean,
-  draggable: Boolean,
+<CodeBlock
+  language="typescript"
+  code={`{
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  fixed: boolean,
+  resizable: boolean,
+  draggable: boolean,
   min: {
-    w: Number,
-    h: Number,
+    w: number,
+    h: number,
   },
   max: {
-    w: Number,
-    h: Number,
+    w: number,
+    h: number,
   },
-  customDragger: Boolean,
-  customResizer: Boolean,
-`}
+  customDragger: boolean,
+  customResizer: boolean,
+}`}
+/>
 
 <p>Example of use</p>
 
-{`
+<CodeBlock
+  language="html"
+  code={`
 <script>
 const items = [
   {
@@ -140,27 +182,31 @@ const items = [
 
 const cols = [[1200, 6]];
 </script>
+
 <Grid gap={[10, 5]} {items} {cols} rowHeight={150} let:item let:dataItem>
   <div>{item.data}</div>
 </Grid>
 `}
+/>
 
 <ul>
-  <li><emph>dataItem</emph> - Returns your item, you can use it to access your data</li>
+  <li>
+    <emph>dataItem</emph> - Returns your item, you can use it to access your data
+  </li>
   <li><emph>item</emph> - Returns the item for the current breakpoint</li>
 </ul>
 
-<h3>Responsiveness</h3>
+<h2 class="h2">Responsiveness</h2>
 
 <p>
-  > See this <a href="/examples/responsive">demo</a>
+  > See this <Link href="/examples/responsive">demo</Link>
 </p>
 
 <p>You can specify an item for the right column</p>
 
-{`
-<Grid {items} {cols} rowHeight={150} />
-
+<CodeBlock
+  language="html"
+  code={`
 <script>
 let items = [
   {
@@ -175,51 +221,168 @@ const cols = [
   [1024, 2],
 ];
 </script>
-`}
 
-{`
+<Grid {items} {cols} rowHeight={150} />
+`}
+/>
+
+<CodeBlock
+  language="typescript"
+  code={`
 gridHelp.findSpace(item: Object, items: Array<Object>, cols: Number)
 `}
+/>
 
-<p>Find out where to place the widget in the grid by calculating from left to right returns an object of two properties x and y.</p>
+<p>
+  Find out where to place the widget in the grid by calculating from left to
+  right returns an object of two properties x and y.
+</p>
 
-<h3>How to disable opacity animation ?</h3>
+<h2>How to disable opacity animation ?</h2>
 
-{`
+<CodeBlock
+  language="css"
+  code={`
 :global(.svlt-grid-active) {
   opacity: 1!important;
 }
 `}
+/>
 
-<h3>Props</h3>
+<h2>Props</h2>
 
-<div class="table">
-  {`
-  Prop | Type | Description | Required
-  --- | --- | --- | --- |
-  items | \`Array<Object>\` | items is an array of objects, see the demos for more complete usage | Yes items
-  cols | \`Array<Array<Number>>\` | Specify columns, e.g. [[1400, 300]] | Yes
-  gap | \`Array<Number>\` | Margin between items in px | No
-  rowHeight | \`Number\` | Rows have a static height | No
-  throttleUpdate | \`Number\` | Throttle grid recalculation, default value is \`100\` | No
-  throttleResize | \`Number\` | Throttle grid recalculation, when the container changes its width. default value is \`100\` | No
-  on:resize | \`Function<void>\` | The event is triggered when the grid is resized. There are a couple of properties in the detail property. | No
-  on:change | \`Function<void>\` | The event is triggered when an element is resized or moved | No
-  on:mount | \`Function<void>\` | The event is triggered when the grid is mounted. There are a couple of properties in the detail property.
-  on:pointerup | \`Function<void>\` | The event is fired when a pointer is no longer active| No
-  fastStart | \`Boolean\` | Removes transition onload | No
-  fillSpace | \`Boolean\` | Each grid element (except active element) finds its own position.
-  sensor | \`Number\` | Set the distance from the cursor to the edge | No
-  scroller | \`Element\` | Element reference for setting \`Element.scrollTop\`. The default is \`document.documentElement\` | No
-  `}
+<div class="table-container">
+  <!-- Native Table Element -->
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Prop</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Required</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>items</td>
+        <td><code class="code">Array&lt;Object&gt;</code></td>
+        <td
+          >items is an array of objects, see the demos for more complete usage</td
+        >
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td>cols</td>
+        <td><code class="code">Array&lt;Array&lt;Number&gt;&gt;</code></td>
+        <td>Specify columns, e.g. [[1400, 300]]</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td>gap</td>
+        <td><code class="code">Array&lt;Number&gt;</code></td>
+        <td>Margin between items in px</td>
+        <td>No</td>
+      </tr>
+      <tr>
+        <td>rowHeight</td>
+        <td><code class="code">Number</code></td>
+        <td>Rows have a static height</td>
+        <td>No</td>
+      </tr>
+      <tr>
+        <td>throttleUpdate</td>
+        <td><code class="code">Number</code></td>
+        <td
+          >Throttle grid recalculation, default value is <code class="code"
+            >100</code
+          ></td
+        >
+        <td>No</td>
+      </tr>
+      <tr>
+        <td>throttleResize</td>
+        <td><code class="code">Number</code></td>
+        <td
+          >Throttle grid recalculation, when the container changes its width.
+          default value is <code class="code">100</code></td
+        >
+        <td>No</td>
+      </tr>
+      <tr>
+        <td>on:resize</td>
+        <td><code class="code">Function&lt;void&gt;</code></td>
+        <td
+          >The event is triggered when the grid is resized. There are a couple
+          of properties in the detail property.</td
+        >
+        <td>No</td>
+      </tr>
+      <tr>
+        <td>on:change</td>
+        <td><code class="code">Function&lt;void&gt;</code></td>
+        <td>The event is triggered when an element is resized or moved</td>
+        <td>No</td>
+      </tr>
+      <tr>
+        <td>on:mount</td>
+        <td><code class="code">Function&lt;void&gt;</code></td>
+        <td
+          >The event is triggered when the grid is mounted. There are a couple
+          of properties in the detail property.</td
+        >
+        <td>No</td>
+      </tr>
+      <tr>
+        <td>on:pointerup</td>
+        <td><code class="code">Function&lt;void&gt;</code></td>
+        <td>The event is fired when a pointer is no longer active</td>
+        <td>No</td>
+      </tr>
+      <tr>
+        <td>fastStart</td>
+        <td><code class="code">Boolean</code></td>
+        <td>Removes transition onload</td>
+        <td>No</td>
+      </tr>
+      <tr>
+        <td>fillSpace</td>
+        <td><code class="code">Boolean</code></td>
+        <td
+          >Each grid element (except active element) finds its own position.</td
+        >
+        <td>No</td>
+      </tr>
+      <tr>
+        <td>sensor</td>
+        <td><code class="code">Number</code></td>
+        <td>Set the distance from the cursor to the edge</td>
+        <td>No</td>
+      </tr>
+      <tr>
+        <td>scroller</td>
+        <td><code class="code">Element</code></td>
+        <td
+          >Element reference for setting <code class="code"
+            >Element.scrollTop</code
+          >. The default is
+          <code class="code">document.documentElement</code></td
+        >
+        <td>No</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
-<p>Have questions ?</p>
+<p>
+  Have questions ?
 
-<a href="https://github.com/vaheqelyan/svelte-grid/issues/new" target="_blank">Open an issue</a>
+  <Link href="https://github.com/vaheqelyan/svelte-grid/issues/new" external>
+    Open an issue
+  </Link>
 
-<style>
-  .table {
-    overflow-x: auto;
-  }
-</style>
+  <style>
+    .table {
+      overflow-x: auto;
+    }
+  </style>
+</p>

@@ -3,52 +3,61 @@
 
   const items = [
     { name: "Home", href: "/" },
-    { name: "Examples", href: "/examples" },
     { name: "Usage", href: "/usage" },
     { name: "Features", href: "/features" },
   ];
+
+  const examples = [
+    { name: "Basic", href: "/examples/basic" },
+    { name: "Add/Remove", href: "/examples/add-remove" },
+    { name: "Auto-scroll", href: "/examples/autoscroll" },
+    { name: "Gap", href: "/examples/gap" },
+    { name: "Responsive", href: "/examples/responsive" },
+    { name: "Min/Max size", href: "/examples/min_max" },
+    { name: "Fixed", href: "/examples/fixed" },
+    { name: "Local storage", href: "/examples/local-storage" },
+    { name: "Events", href: "/examples/events" },
+    {
+      name: "Responsive - Serialize/Restore",
+      href: "/examples/responsive-local-storage",
+    },
+    { name: "Custom dragger", href: "/examples/custom-dragger" },
+    { name: "Custom resizer", href: "/examples/custom-resizer" },
+    { name: "Fast start", href: "/examples/fast-start" },
+    { name: "Fill space", href: "/examples/fill-space" },
+  ];
 </script>
 
-<div class="nav">
-  {#each items as item}
-    <a href={item.href} class="nav-i" class:active={segment === item.href}>{item.name}</a>
-  {/each}
-</div>
-
-<style>
-  @media only screen and (max-width: 530px) {
-    .nav {
-      justify-content: normal !important;
-    }
-    .nav-i {
-      margin: auto !important;
-    }
-  }
-
-  @media only screen and (max-width: 260px) {
-    .nav {
-      overflow-x: scroll;
-      overflow-y: hidden;
-    }
-    .nav-i {
-      margin: 0 !important;
-      padding: 0 10px;
-    }
-  }
-
-  .nav {
-    width: 100%;
-    display: flex;
-    padding: 10px 0;
-    justify-content: center;
-  }
-  .nav-i {
-    margin: 0 2em;
-    cursor: pointer;
-    text-decoration: none;
-  }
-  .active {
-    font-weight: 500;
-    text-decoration: underline;
-  }
-</style>
+<section class="max-h-screen pb-20">
+  <p class="font-bold pl-4 text-3xl mb-4">svelte-grid</p>
+  <nav class="list-nav">
+    <ul>
+      {#each items as item}
+        <li>
+          <a
+            href={item.href}
+            class:bg-primary-active-token={segment === item.href}
+          >
+            {item.name}
+          </a>
+        </li>
+      {/each}
+    </ul>
+  </nav>
+  <hr class="my-4" />
+  <p class="font-bold pl-4 text-2xl mb-2">Examples</p>
+  <nav class="list-nav">
+    <ul>
+      {#each examples as item}
+        <li>
+          <a
+            href={item.href}
+            class:bg-primary-active-token={segment === item.href}
+          >
+            {item.name}
+          </a>
+        </li>
+      {/each}
+    </ul>
+  </nav>
+</section>
