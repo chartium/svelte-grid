@@ -63,4 +63,4 @@ typings/
 build/
 less.exe.stackdump
 
-.svelte-kit/
+# .svelte-kit/
