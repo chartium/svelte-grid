@@ -49,9 +49,9 @@
   <meta name="author" content="Vahe Araqelyan" />
 </svelte:head>
 
-<div class="welcome">
+<div class="text-center space-y-4">
   <h1 class="h1">svelte-grid</h1>
-  <p class="my-4">
+  <p>
     A draggable and resizable grid layout with responsive breakpoints, for
     Svelte.
   </p>
@@ -59,36 +59,23 @@
 
 <Grid bind:items breakpoints={cols} rowHeight={100} let:item fillSpace={true}>
   <div
-    class="content"
+    class="h-full"
     style="background-image: linear-gradient({item.data.start}, {item.data
       .end});"
   />
 </Grid>
 
 <style>
-  .content {
-    width: 100%;
-    height: 100%;
-    border-radius: 6px;
-  }
-
-  :global(body) {
-    overflow-y: scroll;
-  }
-
-  :global(.svlt-grid-resizer::after) {
+  :global(.svelte-grid__resizer::after) {
     border-color: white !important;
   }
 
-  :global(.svlt-grid-shadow) {
+  :global(.svelte-grid__shadow) {
     border-radius: 6px;
   }
 
-  :global(.svlt-grid-item) {
+  :global(.svelte-grid__item) {
     border-radius: 6px;
-  }
-
-  .welcome {
-    text-align: center;
+    overflow: hidden;
   }
 </style>

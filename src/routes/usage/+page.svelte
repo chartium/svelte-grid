@@ -75,14 +75,14 @@
 <CodeBlock
   language="css"
   code={`
+:global(.svelte-grid) {
+  /* Container color */
+  background: #eee;
+}
+
 :global(.svlt-grid-shadow) {
   /* Back shadow */
   background: pink;
-}
-
-:global(.svlt-grid-container) {
-  /* Container color */
-  background: #eee;
 }
 
 :global(.svlt-grid-resizer::after) {
@@ -97,8 +97,7 @@
 <ul class="list-disc pl-8">
   <li>
     <span>
-      <emph class="italic">.svlt-grid-container</emph> - class name of the container
-      grid
+      <emph class="italic">.svelte-grid</emph> - class name of the container grid
     </span>
   </li>
   <li>

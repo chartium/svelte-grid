@@ -62,41 +62,35 @@
   const updateMatrix = ({ detail }: CustomEvent<any>) => {
     let activeItem = items.find(({ id }) => id === detail.id);
 
-    if (activeItem) {
-      activeItem = {
-        ...activeItem,
-        [totalCols]: {
-          ...activeItem[totalCols],
-          ...detail.shadow,
-        },
-      };
+    if (!activeItem) return;
 
-      const flattened = getFlattenedItem(activeItem, totalCols);
+    activeItem = {
+      ...activeItem,
+      [totalCols]: {
+        ...activeItem[totalCols],
+        ...detail.shadow,
+      },
+    };
 
-      if (fillSpace) {
-        items = moveItemsAroundItem(flattened, items, totalCols);
-      } else {
-        items = moveItem(flattened, items, totalCols);
-      }
+    const flattened = getFlattenedItem(activeItem, totalCols);
 
-      if (detail.onUpdate) detail.onUpdate();
+    if (fillSpace) items = moveItemsAroundItem(flattened, items, totalCols);
+    else items = moveItem(flattened, items, totalCols);
 
-      dispatch("change", {
-        unsafeItem: activeItem,
-        id: activeItem.id,
-        cols: totalCols,
-      });
-    }
+    if (detail.onUpdate) detail.onUpdate();
+
+    dispatch("change", {
+      unsafeItem: activeItem,
+      id: activeItem.id,
+      cols: totalCols,
+    });
   };
 
   const throttleMatrix = throttle(updateMatrix, throttleResize);
 
   const handleRepaint = (e: CustomEvent<RepaintEvent>) => {
-    if (!e.detail.isPointerUp) {
-      throttleMatrix(e);
-    } else {
-      updateMatrix(e);
-    }
+    if (!e.detail.isPointerUp) throttleMatrix(e);
+    else updateMatrix(e);
   };
 
   const pointerup = (ev: CustomEvent<{ id: string }>) => {
@@ -112,11 +106,11 @@
 </script>
 
 <div
-  class="svlt-grid-container"
-  style="height: {containerHeight}px"
+  class="svelte-grid"
+  style:height="{containerHeight}px"
   bind:contentRect={realContainerSize}
 >
-  {#if colWidth || !fastStart}
+  {#if colWidth || fastStart}
     {#each flattenedItems as item, i (item.id)}
       <MoveResize
         on:repaint={handleRepaint}
@@ -139,7 +133,7 @@
 </div>
 
 <style>
-  .svlt-grid-container {
+  .svelte-grid {
     position: relative;
     width: 100%;
   }

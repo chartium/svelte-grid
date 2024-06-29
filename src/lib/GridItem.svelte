@@ -137,10 +137,10 @@
   };
 
   const update = () => {
-    const _newScrollTop = scrollElement.scrollTop - _scrollTop;
+    const newScrollTop = scrollElement.scrollTop - _scrollTop;
 
     const boundX = capturePos.x + cordDiff.x;
-    const boundY = capturePos.y + (cordDiff.y + _newScrollTop);
+    const boundY = capturePos.y + (cordDiff.y + newScrollTop);
 
     let gridX = Math.round(boundX / colWidth);
     let gridY = Math.round(boundY / rowHeight);
@@ -148,12 +148,12 @@
     shadow.x = Math.max(Math.min(gridX, totalCols - shadow.w), 0);
     shadow.y = Math.max(gridY, 0);
 
-    if (item.max?.y) {
-      shadow.y = Math.min(shadow.y, item.max.y);
-    }
+    if (item.max?.y) shadow.y = Math.min(shadow.y, item.max.y);
 
     repaint();
   };
+
+  // SECTION: Drag
 
   const pointermove = (event: MouseEvent) => {
     event.preventDefault();
@@ -203,7 +203,7 @@
     repaint(inActivate, true);
   };
 
-  // Resize
+  // SECTION: Resize
 
   let resizeInitPos = { x: 0, y: 0 };
   let initSize = { width: 0, height: 0 };
@@ -275,7 +275,7 @@
 
 {#if active || trans}
   <div
-    class="svlt-grid-shadow shadow-active"
+    class="svelte-grid__shadow svelte-grid__active"
     style:width="{shadow.w * colWidth - gap[0] * 2}px"
     style:height="{shadow.h * rowHeight - gap[1] * 2}px"
     style="transform: translate({shadow.x * colWidth + gap[0]}px, {shadow.y *
@@ -288,25 +288,25 @@
 <div
   draggable={false}
   on:pointerdown={item.customDragger || !item.draggable ? null : pointerdown}
-  class="svlt-grid-item"
-  class:svlt-grid-active={active || (trans && rect)}
+  class="svelte-grid__item"
+  class:svelte-grid__active={active || (trans && rect)}
   style:width="{active ? newSize.width : width}px"
   style:height="{active ? newSize.height : height}px"
   style="{active
     ? `transform: translate(${cordDiff.x}px, ${cordDiff.y}px);top:${rect.top}px;left:${rect.left}px;`
     : trans
-      ? `transform: translate(${cordDiff.x}px, ${cordDiff.y}px); position:absolute; transition: width 0.2s, height 0.2s;`
-      : `transition: transform 0.2s, opacity 0.2s; transform: translate(${left}px, ${top}px); `} "
+      ? `transform: translate(${cordDiff.x}px, ${cordDiff.y}px);transition: width 0.2s, height 0.2s;`
+      : `transform: translate(${left}px, ${top}px);transition: transform 0.2s, opacity 0.2s;`} "
   bind:this={itemElement}
 >
   <slot movePointerDown={pointerdown} {resizePointerDown} />
   {#if item.resizable && !item.customResizer}
-    <div class="svlt-grid-resizer" on:pointerdown={resizePointerDown} />
+    <div class="svelte-grid__resizer" on:pointerdown={resizePointerDown} />
   {/if}
 </div>
 
 <style>
-  .svlt-grid-item {
+  .svelte-grid__item {
     touch-action: none;
     position: absolute;
     will-change: auto;
@@ -314,7 +314,7 @@
     -webkit-backface-visibility: hidden;
   }
 
-  .svlt-grid-resizer {
+  .svelte-grid__resizer {
     user-select: none;
     width: 20px;
     height: 20px;
@@ -324,7 +324,7 @@
     cursor: se-resize;
   }
 
-  .svlt-grid-resizer::after {
+  .svelte-grid__resizer::after {
     content: "";
     position: absolute;
     right: 3px;
@@ -335,7 +335,7 @@
     border-bottom: 2px solid rgba(0, 0, 0, 0.4);
   }
 
-  .svlt-grid-active {
+  .svelte-grid__item.svelte-grid__active {
     z-index: 3;
     cursor: grabbing;
     position: fixed;
@@ -350,17 +350,17 @@
     user-select: none;
   }
 
-  .shadow-active {
-    z-index: 2;
-    transition: all 0.2s;
-  }
-
-  .svlt-grid-shadow {
+  .svelte-grid__shadow {
     position: absolute;
     background: red;
     will-change: transform;
     background: pink;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
+  }
+
+  .svelte-grid__shadow.svelte-grid__active {
+    z-index: 2;
+    transition: all 0.2s;
   }
 </style>
