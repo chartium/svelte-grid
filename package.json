@@ -1,6 +1,7 @@
 {
   "name": "@chartium/svelte-grid",
   "version": "6.0.0-alpha.1",
+  "private": false,
   "description": "A responsive, draggable and resizable grid layout, for Svelte.",
   "type": "module",
   "scripts": {
